@@ -11,7 +11,7 @@ import Spinner from "react-bootstrap/Spinner";
 import Image from "react-bootstrap/Image";
 import Container from "react-bootstrap/Container";
 
-function page() {
+function Prediction() {
   const [predictResult, setPredictResult] = useState();
   const [loading, setLoading] = useState(false);
   const imageSources = [
@@ -152,4 +152,4 @@ function page() {
   );
 }
 
-export default page;
+export default Prediction;

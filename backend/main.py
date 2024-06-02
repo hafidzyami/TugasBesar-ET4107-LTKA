@@ -54,7 +54,7 @@ async def get_predict():
         ]
         print(f"instances : {instances}")
         payload = json.dumps({"instances": instances})
-        url = "http://4.144.136.86:8501/v1/models/ml_arrifqi:predict"
+        url = "https://mlarrifqi-p6wt6m5nea-et.a.run.app/v1/models/ml_arrifqi:predict"
         response = requests.post(url, data=payload)
         response_data = json.loads(response.text)
         print(f"response data: {response_data}")
@@ -70,7 +70,7 @@ async def get_manual_predict(input_data : PredictionInput):
         ]
         print(f"instances : {instances}")
         payload = json.dumps({"instances": instances})
-        url = "http://4.144.136.86:8501/v1/models/ml_arrifqi:predict"
+        url = "https://mlarrifqi-p6wt6m5nea-et.a.run.app/v1/models/ml_arrifqi:predict"
         response = requests.post(url, data=payload)
         response_data = json.loads(response.text)
         print(f"response data: {response_data}")

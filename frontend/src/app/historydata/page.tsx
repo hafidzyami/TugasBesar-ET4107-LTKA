@@ -16,7 +16,7 @@ function History() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://20.247.227.5/api/v1/data");
+        const res = await fetch("https://tugasbesar-et4107-ltka-p6wt6m5nea-et.a.run.app/api/v1/data");
         const result = await res.json();
         setData(result);
       } catch (error) {

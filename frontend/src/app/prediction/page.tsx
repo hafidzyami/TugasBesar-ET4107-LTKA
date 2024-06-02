@@ -45,7 +45,7 @@ function Prediction() {
     };
     try {
       const response = await fetch(
-        "http://20.247.227.5/api/v1/manualmlprediction",
+        "https://tugasbesar-et4107-ltka-p6wt6m5nea-et.a.run.app/api/v1/manualmlprediction",
         {
           method: "POST",
           headers: {

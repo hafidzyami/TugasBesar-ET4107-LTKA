@@ -5,7 +5,6 @@ import NavigationBar from "../../components/navbar";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Image from "react-bootstrap/Image";
-import sun from "../../public/assets/sun.png";
 
 export default function Home() {
   const [predictResult, setPredictResult] = useState();
@@ -18,7 +17,7 @@ export default function Home() {
   const handlePredict = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://20.247.227.5/api/v1/mlprediction");
+      const res = await fetch("https://tugasbesar-et4107-ltka-p6wt6m5nea-et.a.run.app/api/v1/mlprediction");
       const result = await res.json();
       setPredictResult(result);
     } catch (error) {

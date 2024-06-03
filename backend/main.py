@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from mqtt import mqtt_client
+from mqtt import mqtt_client, clear_data
 import json
 from datetime import datetime
 import requests
@@ -84,15 +84,7 @@ async def get_manual_predict(input_data : PredictionInput):
 @app.delete("/api/v1/data")
 async def delete_data():
     try:
-        with open('data.json') as f:
-            json_data = json.load(f)
-
-        # Overwrite the JSON data with an empty list
-        json_data = []
-
-        # Save the modified JSON data to the file
-        with open('data.json', 'w') as f:
-            json.dump(json_data, f)
+        clear_data()
         return "Berhasil hapus data!"
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

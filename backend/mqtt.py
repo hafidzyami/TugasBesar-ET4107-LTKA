@@ -22,6 +22,11 @@ def save_to_json():
             json.dump(data, json_file, indent=4)
     except Exception as e:
         print("Error:", e)
+        
+def clear_data():
+    global data
+    data = []
+    save_to_json()
 
 # Create MQTT client instance
 mqtt_client = mqtt.Client()

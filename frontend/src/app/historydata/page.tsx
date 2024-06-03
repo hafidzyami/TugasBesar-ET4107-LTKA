@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import NavigationBar from "../../../components/navbar";
 import Table from "react-bootstrap/Table";
 import Pagination from "react-bootstrap/Pagination";
+import { Button } from "react-bootstrap";
 
 function History() {
   // State to store fetched data
@@ -12,20 +13,42 @@ function History() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
+  const fetchData = async () => {
+    try {
+      const res = await fetch(
+        "https://tugasbesar-et4107-ltka-p6wt6m5nea-et.a.run.app/api/v1/data"
+      );
+      const result = await res.json();
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   // Fetch data from server on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("https://tugasbesar-et4107-ltka-p6wt6m5nea-et.a.run.app/api/v1/data");
-        const result = await res.json();
-        setData(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
 
     fetchData();
   }, []);
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch("https://tugasbesar-et4107-ltka-p6wt6m5nea-et.a.run.app/api/v1/data", {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      if (res.ok) {
+        // Refresh data after successful deletion
+        fetchData();
+      } else {
+        console.error("Failed to delete data:", res.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+  };
 
   // Render blank table if data is null, empty, or not an array
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -114,6 +137,9 @@ function History() {
             />
           </Pagination>
         </div>
+      </div>
+      <div className="mt-1 ms-2">
+        <Button className="btn-danger" onClick={handleDelete}>Delete Data</Button>
       </div>
     </div>
   );

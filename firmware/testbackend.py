@@ -3,10 +3,12 @@ import random
 import time
 
 # MQTT broker details
-broker_address = "broker.hivemq.com"
+broker_address = "mqtt.thingsboard.cloud"
+broker_addressBackend = "broker.hivemq.com"
 port = 1883
-username = "Gcjp8ecOst4iy8Edj1lC"
+username = "mXIaKVQeECPIcYaMTplD"
 topic = "v1/telemetry/bmp280arrifqi"
+topicBackend = "v1/devices/me/telemetry"
 
 # Function to generate random temperature and pressure values
 def generate_data():
@@ -20,7 +22,7 @@ while True:
     temperature, pressure, altitude = generate_data()
     message = '{{"temperature": {}, "pressure": {}, "altitude" : {}}}'.format(temperature, pressure, altitude)
     try:
-        publish.single(topic, message, hostname=broker_address, port=port, auth={'username': username})
+        publish.single(topic, message, hostname=broker_addressBackend, port=port)
         print("Message published successfully:", message)
     except Exception as e:
         print("Error:", e)

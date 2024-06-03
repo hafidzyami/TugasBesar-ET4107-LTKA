@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from mqtt import mqtt_client
 import json
 from datetime import datetime
 import requests
 from pydantic import BaseModel
+import os
 
 app = FastAPI()
 
@@ -78,6 +79,23 @@ async def get_manual_predict(input_data : PredictionInput):
         print(f"predictions: {predictions}")
         index_of_max_value = predictions.index(max(predictions))
         return index_of_max_value
+    
+    
+@app.delete("/api/v1/data")
+async def delete_data():
+    try:
+        with open('data.json') as f:
+            json_data = json.load(f)
+
+        # Overwrite the JSON data with an empty list
+        json_data = []
+
+        # Save the modified JSON data to the file
+        with open('data.json', 'w') as f:
+            json.dump(json_data, f)
+        return "Berhasil hapus data!"
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
         
     
     

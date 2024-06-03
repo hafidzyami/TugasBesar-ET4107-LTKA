@@ -7,24 +7,28 @@
 
 Adafruit_BMP280 BMP; // I2C
 
-#define SDA_PIN 26
-#define SCL_PIN 27
+#define SDA_PIN 21
+#define SCL_PIN 22
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 const char* ssid[] = {"KENARI LANTAI 3", "Bandung", "JOHNPARIS"};
 const char* password[] = {"kenari851", "ybandung", "sambelterasi"};
-const char* mqtt_server = "broker.hivemq.com";
+const char* mqtt_server_Backend = "broker.hivemq.com";
+const char* mqtt_server_Tb = "mqtt.thingsboard.cloud";
 const int mqtt_port = 1883;
-const char* mqtt_topic = "v1/telemetry/bmp280arrifqi";
+const char* mqtt_topic_Backend = "v1/telemetry/bmp280arrifqi";
+const char* mqtt_topic_Tb = "v1/devices/me/telemetry";
+const char* access_token_Tb = "mXIaKVQeECPIcYaMTplD";
 
 unsigned long prevMillis = 0;
-int num_networks = 2;
+int num_networks = 3;
 
-WiFiClient espClient;
-PubSubClient client(espClient);
+WiFiClient espClientBackend;
+WiFiClient espClientTb;
+PubSubClient clientBe(espClientBackend);
+PubSubClient clientTb(espClientTb);
 
 void setup_wifi() {
-
   delay(10);
   for (int i = 0; i < num_networks; i++) {
     Serial.print("Attempting to connect to ");
@@ -49,7 +53,7 @@ void setup_wifi() {
   }
 }
 
-void reconnect() {
+void reconnect(PubSubClient& client, const char* mqtt_topic, const char* token) {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
@@ -57,7 +61,7 @@ void reconnect() {
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
     // Attempt to connect
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), token, "")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       // ... and resubscribe
@@ -83,14 +87,20 @@ void setup() {
   }
 
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  clientTb.setServer(mqtt_server_Tb, mqtt_port);
+  clientBe.setServer(mqtt_server_Backend, mqtt_port);
 }
 
 void loop() {
-  if (!client.connected()) {
-    reconnect();
+  if (!clientTb.connected()) {
+    reconnect(clientTb, mqtt_topic_Tb, access_token_Tb);
   }
-  client.loop();
+  if (!clientBe.connected()) {
+    reconnect(clientBe, mqtt_topic_Backend, "");
+  }
+  clientBe.loop();
+  clientTb.loop();
+  
   unsigned long currentMillis = millis();
 
   if(currentMillis - prevMillis > 1000){
@@ -98,14 +108,27 @@ void loop() {
     float pressure = BMP.readPressure();
     float altitude = BMP.readAltitude(SEALEVELPRESSURE_HPA);
 
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.println(" *C");
+
+    Serial.print("Pressure: ");
+    Serial.print(pressure);
+    Serial.println(" Pa");
+
+    Serial.print("Altitude: ");
+    Serial.print(altitude);
+    Serial.println(" m");
+
     // Create JSON payload
-    StaticJsonDocument<4> doc;
-    doc["Temperature"] = temperature;
-    doc["Pressure"] = pressure;
-    doc["Altitude"] = altitude;
-    char payload[200]; 
-    serializeJson(doc, payload);
-    client.publish(mqtt_topic, payload);
+    char payload[256];
+    snprintf(payload, sizeof(payload), "{\"temperature\": %.2f, \"pressure\": %.2f, \"altitude\": %.2f}", temperature, pressure, altitude);
+    
+    // Print the payload
+    Serial.print("Publishing payload: ");
+    Serial.println(payload);
+    clientBe.publish(mqtt_topic_Backend, payload);
+    clientTb.publish(mqtt_topic_Tb, payload);
     prevMillis = currentMillis;
   }
   delay(100);

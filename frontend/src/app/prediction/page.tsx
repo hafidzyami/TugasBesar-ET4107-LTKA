@@ -12,7 +12,7 @@ import Image from "react-bootstrap/Image";
 import Container from "react-bootstrap/Container";
 
 function Prediction() {
-  const [predictResult, setPredictResult] = useState();
+  const [predictResult, setPredictResult] = useState(undefined);
   const [loading, setLoading] = useState(false);
   const imageSources = [
     "/assets/sun.png", // predictResult = 0
@@ -23,7 +23,11 @@ function Prediction() {
   const [temperature, setTemperature] = useState("");
   const [pressure, setPressure] = useState("");
   const [altitude, setAltitude] = useState("");
-  const [errors, setErrors] = useState({ temperature: false, pressure: false, altitude: false });
+  const [errors, setErrors] = useState({
+    temperature: false,
+    pressure: false,
+    altitude: false,
+  });
   const handlePredict = async () => {
     const newErrors = {
       temperature: !temperature,
@@ -35,7 +39,7 @@ function Prediction() {
 
     // If there are any errors, stop the submission
     if (newErrors.temperature || newErrors.pressure || newErrors.altitude) {
-      alert("Please input all fields!")
+      alert("Please input all fields!");
       return;
     }
     const data = {
@@ -128,13 +132,13 @@ function Prediction() {
           </Col>
           <Col className="d-flex flex-column align-items-center">
             <h5 className="mb-5">Hasil Prediksi:</h5>
-            {predictResult && (
+            {predictResult !== undefined && (
               <Image
-                src={imageSrc}
+                src={predictResult === 0 ? "/assets/sun.png" : imageSrc}
                 width={150}
                 height={150}
                 className="mb-5"
-              ></Image>
+              />
             )}
             <Button variant="outline-success" onClick={handlePredict}>
               Predict
